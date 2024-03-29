@@ -13,7 +13,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 type urlStrings struct{
-	Url string `bson:"url,omitempty"`
+	Url string `bson:"url, omitempty"`
 	Id  primitive.ObjectID  `json:_id bson:"_id`
 }
 var client *mongo.Client
