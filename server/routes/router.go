@@ -2,10 +2,13 @@ package router
 
 import (
 	"context"
-	"fmt"
-	"net/http"
-	connection "urlShortener/server/db"
 	"encoding/json"
+	"fmt"
+	"log"
+	"net"
+	"net/http"
+	"net/url"
+	connection "urlShortener/server/db"
 
 	"github.com/gorilla/mux"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -26,25 +29,22 @@ func Router() *mux.Router {
 	return router
 }
 
-func CreateUrl(w http.ResponseWriter, r *http.Request) {
-	// params := mux.Vars(r)
+func isValidURL(urlObj string) bool{
 
-	var urlData map[string]string
-	if err := json.NewDecoder(r.Body).Decode(&urlData); err != nil {
-		http.Error(w, "Invalid request body", http.StatusBadRequest)
-		return
+	u, err := url.Parse(urlObj)
+	if err != nil {
+		fmt.Println("Cannot parse the URL")
 	}
-	client := connection.GetClient()
-	collection := client.Database("go").Collection("urlStrings")
-	
-	isValidURL(urlData)
-	insertURL(r.Context(), collection, urlData)
+    ips, err := net.DefaultResolver.LookupIPAddr(context.Background(), u.Hostname())
+
+	if err != nil {
+		return false
+	}
+	return len(ips)>0
+
 
 }
-func isValidURL(urlObj map[string]string){
-
-}
-func insertURL(ctx context.Context, collection *mongo.Collection, object  map[string]string) {
+func insertURL(ctx context.Context, collection *mongo.Collection, object  map[string]string) (connection.URLStrings) {
 	
 	newID := primitive.NewObjectID()
 	doc := connection.URLStrings{Url:object["url"], Id: newID}
@@ -56,7 +56,33 @@ func insertURL(ctx context.Context, collection *mongo.Collection, object  map[st
 	}
 	fmt.Println("Inserted New document")
 
+	return doc
+
+
 }
+func CreateUrl(w http.ResponseWriter, r *http.Request) {
+	// params := mux.Vars(r)
+
+	var urlData map[string]string
+	if err := json.NewDecoder(r.Body).Decode(&urlData); err != nil {
+		http.Error(w, "Invalid request body", http.StatusBadRequest)
+		return
+	}
+	client := connection.GetClient()
+	collection := client.Database("go").Collection("urlStrings")
+	
+	
+	if isValidURL(urlData["url"]) {
+		insertURL(r.Context(), collection, urlData)
+
+
+	} else {
+		log.Fatalln("Invalid URL")
+	}
+	
+
+}
+
 func RedirectUrl(w http.ResponseWriter, r *http.Request) {
 
 }
