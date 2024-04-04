@@ -11,6 +11,7 @@ import (
 	connection "urlShortener/server/db"
 
 	"github.com/gorilla/mux"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
@@ -79,11 +80,30 @@ func CreateUrl(w http.ResponseWriter, r *http.Request) {
 	} else {
 		log.Fatalln("Invalid URL")
 	}
+	// shorturl := 
 	
+	// return 
 
 }
 
 func RedirectUrl(w http.ResponseWriter, r *http.Request) {
+
+	params := mux.Vars(r)
+	shortId := params["id"]
+	client := connection.GetClient()
+	collection := client.Database("go").Collection("urlStrings")
+
+	var urlData connection.URLStrings
+
+	res := collection.FindOne(context.TODO(), bson.M{"id":shortId}).Decode(&urlData)
+
+	if res!=nil{
+		fmt.Println("No Short Url found")
+	}
+
+	http.Redirect(w, r, urlData.Url, http.StatusFound)
+
+
 
 }
 
