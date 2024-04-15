@@ -48,9 +48,8 @@ URL Shortener is a simple web service that allows users to shorten long URLs int
 
 ### Usage
 1. Start the backend server:
-```bash
-go run main.go
-
+   ```bash
+   go run main.go
 2. Start the frontend development server:
 ```bash
 cd frontend
