@@ -47,11 +47,11 @@ URL Shortener is a simple web service that allows users to shorten long URLs int
    npm install
 
 ### Usage
-Start the backend server:
+1. Start the backend server:
 ```bash
 go run main.go
 
-Start the frontend development server:
+2. Start the frontend development server:
 ```bash
 cd frontend
 npm run dev
