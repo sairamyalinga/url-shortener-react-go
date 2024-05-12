@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"log"
 	"net"
 	"net/http"
 	"net/url"
@@ -19,16 +18,13 @@ import (
 func Router() *mux.Router {
 
 	router := mux.NewRouter()
-	router.HandleFunc("/api/shorturl", CreateUrl).Methods("POST", "OPTIONS")
-	router.HandleFunc("/api/shorturl/{id}", RedirectUrl).Methods("GET", "OPTIONS")
-	
-
-	// router.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-	//     http.ServeFile(w, r, "urlShortener/frontend/index.html")
-	// })
+	router.HandleFunc("/api/shorturl", CreateUrl).Methods("POST")
+	router.HandleFunc("/api/shorturl/{id}", RedirectUrl).Methods("GET")
 
 	return router
 }
+
+
 
 func isValidURL(urlObj string) bool{
 
@@ -52,7 +48,9 @@ func insertURL(ctx context.Context, collection *mongo.Collection, object  map[st
 
 	_, err := collection.InsertOne(context.TODO(), doc)
 	if err!= nil{
-		fmt.Println("Failed to insert the new document")
+		fmt.Println("Failed to insert the new document",err)
+		
+	
 
 	}
 	fmt.Println("Inserted New document")
@@ -62,10 +60,15 @@ func insertURL(ctx context.Context, collection *mongo.Collection, object  map[st
 
 }
 func CreateUrl(w http.ResponseWriter, r *http.Request) {
-	// params := mux.Vars(r)
-
+	
+	if r.Method == "OPTIONS" {
+		return
+	}
+	fmt.Println(r.URL);
+	fmt.Println(r.Body)
 	var urlData map[string]string
 	if err := json.NewDecoder(r.Body).Decode(&urlData); err != nil {
+		fmt.Println(err)
 		http.Error(w, "Invalid request body", http.StatusBadRequest)
 		return
 	}
@@ -74,16 +77,21 @@ func CreateUrl(w http.ResponseWriter, r *http.Request) {
 	
 	
 	if isValidURL(urlData["url"]) {
-		insertURL(r.Context(), collection, urlData)
+		fmt.Println("hi")
+		shorturl := insertURL(r.Context(), collection, urlData)
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(shorturl.Id)
+		
 
 
 	} else {
-		log.Fatalln("Invalid URL")
+		fmt.Println("bye")
+		http.Error(w, "Invalid URL", http.StatusBadRequest)
+		return
 	}
-	// shorturl := 
 	
-	// return 
-
+	
+	
 }
 
 func RedirectUrl(w http.ResponseWriter, r *http.Request) {
