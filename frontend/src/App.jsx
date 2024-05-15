@@ -1,27 +1,26 @@
-//import { useState } from 'react'
+import { useState } from 'react'
 import Header from './components/Header'
 import './App.css'
 import axios from 'axios'
 
 function App() {
 
+  const [shortURL, setShortURL] = useState('');
+
   const handleClick = () =>{
     const requestData = document.getElementById('urlinput').value;
     console.log(requestData)
-//     const article = { title: 'React POST Request Example' };
-//   const headers = { 
-// 'Authorization': 'Bearer my-token',
-// 'My-Custom-Header': 'foobar',
-// "content-type": 'application/json'
-//   };
     axios.post('http://localhost:5050/api/shorturl',{url:requestData})
       .then(response =>{
         console.log(response.data)
+        setShortURL(response.data.shortURL)
       })
       .catch(error =>{
         console.log('Error', error)
       });
   };
+
+
   return (
     <div>
       <Header />
@@ -32,6 +31,9 @@ function App() {
               <input type="url" id = "urlinput" className="form-control rounded-pill-8" placeholder="https://" />
               <button type="button" className="btn btn-info" onClick={handleClick} >Shorten!</button>
             </div>
+            <div>
+            {shortURL && <p>Short URL: {shortURL}</p>}
+          </div>
           </div>
         </div>
       </div>

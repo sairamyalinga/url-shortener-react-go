@@ -19,7 +19,7 @@ func Router() *mux.Router {
 
 	router := mux.NewRouter()
 	router.HandleFunc("/api/shorturl", CreateUrl).Methods("POST")
-	router.HandleFunc("/api/shorturl/{id}", RedirectUrl).Methods("GET")
+	router.HandleFunc("/{id}", RedirectUrl).Methods("GET")
 
 	return router
 }
@@ -41,12 +41,11 @@ func isValidURL(urlObj string) bool{
 
 
 }
-func insertURL(ctx context.Context, collection *mongo.Collection, object  map[string]string) (connection.URLStrings) {
+func insertURL(ctx context.Context, collection *mongo.Collection, object  map[string]string) ( primitive.ObjectID) {
 	
-	newID := primitive.NewObjectID()
-	doc := connection.URLStrings{Url:object["url"], Id: newID}
+	doc := connection.URLStrings{Url:object["url"]}
 
-	_, err := collection.InsertOne(context.TODO(), doc)
+	res, err := collection.InsertOne(context.TODO(), doc)
 	if err!= nil{
 		fmt.Println("Failed to insert the new document",err)
 		
@@ -55,7 +54,7 @@ func insertURL(ctx context.Context, collection *mongo.Collection, object  map[st
 	}
 	fmt.Println("Inserted New document")
 
-	return doc
+	return res.InsertedID.(primitive.ObjectID)
 
 
 }
@@ -78,12 +77,10 @@ func CreateUrl(w http.ResponseWriter, r *http.Request) {
 	
 	if isValidURL(urlData["url"]) {
 		fmt.Println("hi")
-		shorturl := insertURL(r.Context(), collection, urlData)
-		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(shorturl.Id)
-		
-
-
+		id := insertURL(r.Context(), collection, urlData)
+		shortURL := "http://localhost:5050/" + id.Hex()
+        w.WriteHeader(http.StatusOK)
+        json.NewEncoder(w).Encode(map[string]string{"shortURL": shortURL})
 	} else {
 		fmt.Println("bye")
 		http.Error(w, "Invalid URL", http.StatusBadRequest)
@@ -98,12 +95,18 @@ func RedirectUrl(w http.ResponseWriter, r *http.Request) {
 
 	params := mux.Vars(r)
 	shortId := params["id"]
+	shortIdOid, err := primitive.ObjectIDFromHex(shortId)
+	if err != nil {
+		fmt.Println("fatal")
+	}
+	fmt.Println(shortId)
 	client := connection.GetClient()
 	collection := client.Database("go").Collection("urlStrings")
 
 	var urlData connection.URLStrings
 
-	res := collection.FindOne(context.TODO(), bson.M{"id":shortId}).Decode(&urlData)
+	res := collection.FindOne(context.TODO(), bson.M{"_id": shortIdOid}).Decode(&urlData)
+	fmt.Println(res)
 
 	if res!=nil{
 		fmt.Println("No Short Url found")
