@@ -6,6 +6,7 @@ import axios from 'axios'
 function App() {
 
   const [shortURL, setShortURL] = useState('');
+  const [showURL, setShowURL] = useState(false);
 
   const handleClick = () =>{
     const requestData = document.getElementById('urlinput').value;
@@ -14,11 +15,28 @@ function App() {
       .then(response =>{
         console.log(response.data)
         setShortURL(response.data.shortURL)
+        setShowURL(true)
       })
       .catch(error =>{
         console.log('Error', error)
       });
   };
+
+  const handleCopyToClipboard = () =>{
+    navigator.clipboard.writeText(shortURL)
+    .then(() => {
+      console.log('Text copied to clipboard');
+      alert('ShortURL copied to clipboard!');
+    })
+    .catch(err => {
+      console.error('Failed to copy text: ', err);
+    });
+  };
+
+  const handleClose = () =>{
+    setShowURL(false)
+    setShortURL('')
+  }
 
 
   return (
@@ -32,7 +50,13 @@ function App() {
               <button type="button" className="btn btn-info" onClick={handleClick} >Shorten!</button>
             </div>
             <div>
-            {shortURL && <p>Short URL: {shortURL}</p>}
+            {showURL && (
+        <div className="short-url-container">
+          <p>Short URL: {shortURL}</p>
+          <button className="btn btn-secondary" onClick={handleCopyToClipboard}>Copy to Clipboard</button>
+          <button className="btn btn-danger" onClick={handleClose}>Close</button>
+        </div>
+      )}
           </div>
           </div>
         </div>
