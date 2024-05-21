@@ -16,7 +16,8 @@ import (
 
 type URLStrings struct {
 	Url string             `bson:"url, omitempty"`
-	Id primitive.ObjectID `bson:"omitempty"`
+	Id primitive.ObjectID `bson:"_id,omitempty"`
+	ShortID string             `bson:"shortID,omitempty"`
 }
 
 var client *mongo.Client

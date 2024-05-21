@@ -41,7 +41,7 @@ func isValidURL(urlObj string) bool{
 
 
 }
-func insertURL(ctx context.Context, collection *mongo.Collection, object  map[string]string) ( primitive.ObjectID) {
+func insertURL(ctx context.Context, collection *mongo.Collection, object  map[string]string) (string) {
 	
 	doc := connection.URLStrings{Url:object["url"]}
 
@@ -52,9 +52,23 @@ func insertURL(ctx context.Context, collection *mongo.Collection, object  map[st
 	
 
 	}
-	fmt.Println("Inserted New document")
+	//fmt.Println("Inserted New document")
+	insertedID := res.InsertedID.(primitive.ObjectID)
 
-	return res.InsertedID.(primitive.ObjectID)
+    // Convert ObjectID to hex string and extract last 6 characters
+    shortID := insertedID.Hex()[18:] 
+	_, err = collection.UpdateOne(
+        context.Background(),
+        bson.M{"_id": insertedID},
+        bson.M{"$set": bson.M{"shortID": shortID}},
+    )
+	if err != nil {
+		fmt.Println("Failed to update document with shortID:", err)
+    }
+
+    fmt.Println("Inserted New document with shortID:", shortID)
+
+	return shortID
 
 
 }
@@ -78,7 +92,7 @@ func CreateUrl(w http.ResponseWriter, r *http.Request) {
 	if isValidURL(urlData["url"]) {
 		fmt.Println("hi")
 		id := insertURL(r.Context(), collection, urlData)
-		shortURL := "http://localhost:5050/" + id.Hex()
+		shortURL := "http://localhost:5050/" + id
         w.WriteHeader(http.StatusOK)
         json.NewEncoder(w).Encode(map[string]string{"shortURL": shortURL})
 	} else {
@@ -95,17 +109,17 @@ func RedirectUrl(w http.ResponseWriter, r *http.Request) {
 
 	params := mux.Vars(r)
 	shortId := params["id"]
-	shortIdOid, err := primitive.ObjectIDFromHex(shortId)
-	if err != nil {
-		fmt.Println("fatal")
-	}
+	// shortIdOid, err := primitive.ObjectIDFromHex(shortId)
+	// if err != nil {
+	// 	fmt.Println("fatal")
+	// }
 	fmt.Println(shortId)
 	client := connection.GetClient()
 	collection := client.Database("go").Collection("urlStrings")
 
 	var urlData connection.URLStrings
 
-	res := collection.FindOne(context.TODO(), bson.M{"_id": shortIdOid}).Decode(&urlData)
+	res := collection.FindOne(context.TODO(), bson.M{"shortID": shortId}).Decode(&urlData)
 	fmt.Println(res)
 
 	if res!=nil{
