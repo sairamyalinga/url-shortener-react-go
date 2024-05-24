@@ -8,7 +8,6 @@ import (
 
 	"github.com/joho/godotenv"
 	"go.mongodb.org/mongo-driver/bson"
-	_ "go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -18,6 +17,13 @@ type URLStrings struct {
 	Url string             `bson:"url, omitempty"`
 	Id primitive.ObjectID `bson:"_id,omitempty"`
 	ShortID string             `bson:"shortID,omitempty"`
+}
+
+type User struct {
+	UserId primitive.ObjectID `bson:"_id,omitempty"`
+	UserName string `json:"user_name" validate:"required,min=4,max=30"`
+	Password string `json:"password" validate:"required,min=8,max=30"`
+
 }
 
 var client *mongo.Client

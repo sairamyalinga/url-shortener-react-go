@@ -18,6 +18,7 @@ import (
 func Router() *mux.Router {
 
 	router := mux.NewRouter()
+	router.HandleFunc("/api/signup", RegisterUser).Methods("POST")
 	router.HandleFunc("/api/shorturl", CreateUrl).Methods("POST")
 	router.HandleFunc("/{id}", RedirectUrl).Methods("GET")
 
@@ -72,6 +73,7 @@ func insertURL(ctx context.Context, collection *mongo.Collection, object  map[st
 
 
 }
+
 func CreateUrl(w http.ResponseWriter, r *http.Request) {
 	
 	if r.Method == "OPTIONS" {
@@ -109,10 +111,6 @@ func RedirectUrl(w http.ResponseWriter, r *http.Request) {
 
 	params := mux.Vars(r)
 	shortId := params["id"]
-	// shortIdOid, err := primitive.ObjectIDFromHex(shortId)
-	// if err != nil {
-	// 	fmt.Println("fatal")
-	// }
 	fmt.Println(shortId)
 	client := connection.GetClient()
 	collection := client.Database("go").Collection("urlStrings")
