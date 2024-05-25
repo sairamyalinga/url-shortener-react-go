@@ -5,17 +5,36 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	_"net/url"
+	_ "net/url"
+	"time"
+	"os"
 	connection "urlShortener/server/db"
 
-	"golang.org/x/crypto/bcrypt"
-	"go.mongodb.org/mongo-driver/bson"
-	_"go.mongodb.org/mongo-driver/bson/primitive"
 	"github.com/go-playground/validator/v10"
+	"github.com/golang-jwt/jwt/v5"
+	"go.mongodb.org/mongo-driver/bson"
+	_ "go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+	"golang.org/x/crypto/bcrypt"
 )
 
+var secretKey = []byte(os.Getenv("JWT_KEY"))
 
+func generateJWT(username string) (string, error) {
+
+	claims := jwt.MapClaims{
+		"sub": username,
+		"exp": time.Now().Add(24 * time.Hour).Unix(),
+	}
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	tokenString, err := token.SignedString(secretKey)
+	if err != nil {
+		return "", err
+	}
+
+	return tokenString, nil
+
+}
 func RegisterUser(w http.ResponseWriter, r *http.Request){
 
 	validate := validator.New()
@@ -68,3 +87,39 @@ func RegisterUser(w http.ResponseWriter, r *http.Request){
 	json.NewEncoder(w).Encode(map[string]string{"Alert": "SignUp Success!" })
 
 }
+
+func Signin(w http.ResponseWriter, r *http.Request){
+
+	var logindetails connection.User
+
+	if err := json.NewDecoder(r.Body).Decode(&logindetails); err != nil {
+		fmt.Println(err)
+		http.Error(w, "Invalid request body", http.StatusBadRequest)
+		return
+	}
+
+	client := connection.GetClient()
+	collection := client.Database("go").Collection("user")
+
+	var user connection.User
+	err := collection.FindOne(context.TODO(), bson.M{"username": logindetails.UserName}).Decode(&user)
+
+	if err != nil{
+        http.Error(w, "UserName doesn't exists. Please, SignUp.", http.StatusNotFound)
+	}
+    
+	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(logindetails.Password))
+	if err != nil{
+		http.Error(w, "Error comparing password hashes", http.StatusInternalServerError)
+	}
+
+	token, err := generateJWT(user.UserName)
+	if err != nil {
+		http.Error(w, "Error generating token", http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(map[string]string{"JWTtoken": token})
+}
+

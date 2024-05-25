@@ -19,6 +19,7 @@ func Router() *mux.Router {
 
 	router := mux.NewRouter()
 	router.HandleFunc("/api/signup", RegisterUser).Methods("POST")
+	router.HandleFunc("/api/login", Signin).Methods("POST")
 	router.HandleFunc("/api/shorturl", CreateUrl).Methods("POST")
 	router.HandleFunc("/{id}", RedirectUrl).Methods("GET")
 
@@ -49,8 +50,6 @@ func insertURL(ctx context.Context, collection *mongo.Collection, object  map[st
 	res, err := collection.InsertOne(context.TODO(), doc)
 	if err!= nil{
 		fmt.Println("Failed to insert the new document",err)
-		
-	
 
 	}
 	//fmt.Println("Inserted New document")
