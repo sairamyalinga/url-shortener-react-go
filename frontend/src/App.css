@@ -22,3 +22,89 @@
     margin-left: 10px;
   }
   
+  
+  .bg-container{
+    background: rgb(238,174,202);
+    background: linear-gradient(90deg, rgba(238,174,202,1) 0%, rgba(148,187,233,1) 100%);  
+    height:100vh;
+    width:100%;
+    margin:0;
+    padding:0; 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+  }
+
+  .form-box {
+    width: 350px;
+    height: auto;
+    background-color: white;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0px 4px 8px rgba(91, 88, 88, 0.5);
+    position: relative;
+}
+
+.toggle-area {
+    width: 280px;
+    margin: auto;
+    position: relative;
+    border-radius: 15px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.toggle-button {
+    width: 130px;
+    background-color: transparent;
+    outline: none;
+    border: none;
+    padding: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: color 0.3s;
+}
+
+.toggle-button.active {
+    color: blue;
+}
+
+.input-group {
+    width: 260px;
+    margin: auto;
+    margin-top: 20px;
+    transition: opacity 0.5s;
+}
+
+.input-group.hidden {
+    display: none;
+}
+
+.input-group .login-input,
+.input-group button {
+    width: 100%;
+    padding: 8px;
+    margin-top: 20px;
+}
+
+.input-group .login-input {
+    border-top: 0;
+    border-left: 0;
+    border-right: 0;
+    border-bottom: 2px solid rgb(44, 9, 9);
+    background-color: white;
+}
+
+.input-group .login-input:focus {
+    outline: none;
+}
+
+.input-group button {
+    outline: none;
+    font-weight: 600;
+    padding: 10px;
+    background: linear-gradient(90deg, rgba(174,238,181,1) 0%, rgba(148,215,233,1) 100%);
+    cursor: pointer;
+    
+}
