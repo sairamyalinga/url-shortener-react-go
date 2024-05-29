@@ -1,8 +1,49 @@
 import { useState } from 'react';
+import axios from 'axios'
 
 
 function Signin() {
     const [changeForm, setChangeForm] = useState(false);
+
+    const handlelogin = (event) => {
+        event.preventDefault();
+        const username = document.getElementById("loginuser").value;
+        const pwd = document.getElementById("loginpwd").value;
+        
+        axios.post('http://localhost:5050/api/login',{user_name:username, password:pwd})
+        .then(response =>{
+          const jwtToken = response.data.JWTtoken;  
+          console.log(response.data.JWTtoken);
+          localStorage.setItem('token', jwtToken);
+          
+        })
+        .catch(error =>{
+          console.log('Error', error)
+        });
+
+    }
+
+    const handlesignup = (event) => {
+        event.preventDefault();
+        const username = document.getElementById("signupuser").value;
+        const pwd = document.getElementById("signuppwd").value;
+        
+        axios.post('http://localhost:5050/api/signup',{user_name:username, password:pwd})
+        .then(response =>{
+            
+          console.log(response.data?.Alert);
+          alert(response.data?.Alert || 'Sign Up Success!');
+          setChangeForm(false);
+       
+          
+        })
+        .catch(error =>{
+          console.log('Error', error)
+          alert('Sign Up Failed! Try again.');
+
+        });
+
+    }
     
     return (
         <div className="bg-container">
@@ -23,15 +64,15 @@ function Signin() {
                 </div>
 
                 <form className={`inpt-group ${changeForm ? "hidden" : ""}`}>
-                    <input type="text" className="login-input" autoComplete="off" placeholder="Enter User Name"/>
-                    <input type="password" className="login-input" placeholder="Enter Password"/>
-                    <button>Login</button>
+                    <input type="text" id="loginuser" className="login-input" autoComplete="off" placeholder="Enter Username"/>
+                    <input type="password" id="loginpwd" className="login-input" placeholder="Enter Password"/>
+                    <button onClick = {handlelogin}>Login</button>
                 </form>
 
                 <form className={`inpt-group ${changeForm ? "" : "hidden"}`}>
-                    <input type="text" className="login-input" autoComplete="off" placeholder="Enter User Name"/>
-                    <input type="password" className="login-input" placeholder="Enter Password"/>
-                    <button>Register</button>
+                    <input type="text"  id="signupuser"className="login-input" autoComplete="off" placeholder="Enter Username"/>
+                    <input type="password" id="signuppwd"className="login-input" placeholder="Enter Password"/>
+                    <button onClick = {handlesignup}>Register</button>
                 </form>
             </div>
         </div>
