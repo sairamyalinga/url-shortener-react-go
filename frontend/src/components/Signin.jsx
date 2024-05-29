@@ -22,13 +22,13 @@ function Signin() {
                     </button>
                 </div>
 
-                <form className={`input-group ${changeForm ? "hidden" : ""}`}>
+                <form className={`inpt-group ${changeForm ? "hidden" : ""}`}>
                     <input type="text" className="login-input" autoComplete="off" placeholder="Enter User Name"/>
                     <input type="password" className="login-input" placeholder="Enter Password"/>
                     <button>Login</button>
                 </form>
 
-                <form className={`input-group ${changeForm ? "" : "hidden"}`}>
+                <form className={`inpt-group ${changeForm ? "" : "hidden"}`}>
                     <input type="text" className="login-input" autoComplete="off" placeholder="Enter User Name"/>
                     <input type="password" className="login-input" placeholder="Enter Password"/>
                     <button>Register</button>
