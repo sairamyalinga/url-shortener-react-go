@@ -3,9 +3,11 @@ import { useState } from 'react'
 import Header from './Header.jsx'
 import axios from 'axios'
 
-function Dashboard({ logout, handleLogout }){
+function Dashboard({ logout, handleLogout}){
     const [shortURL, setShortURL] = useState('');
     const [showURL, setShowURL] = useState(false);
+
+  
   
     const handleClick = () =>{
       const requestData = document.getElementById('urlinput').value;
@@ -68,6 +70,6 @@ function Dashboard({ logout, handleLogout }){
 Dashboard.propTypes = {
   logout: PropTypes.bool.isRequired,
   handleLogout: PropTypes.func.isRequired
-};
+}
 
 export default Dashboard;
