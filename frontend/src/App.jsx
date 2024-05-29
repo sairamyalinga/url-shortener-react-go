@@ -1,19 +1,27 @@
-
+import { useState } from 'react';
 import './App.css'
 import Dashboard from './components/Dashboard';
 import { BrowserRouter, Routes, Route } from "react-router-dom"
 import Signin from './components/Signin';
+
+
 function App() {
 
- 
+  const [logout, setLogout] = useState(false);
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    setLogout(false);
+  };
 
   return (
+
     <BrowserRouter>
+  
     <div>
       <Routes>
-      <Route path = "/SignUp" element = {<Dashboard/>}></Route>
-      <Route path = "/login" element = {<Dashboard/>}></Route>
-      <Route path = "/" element = {<Signin/> }></Route>
+      <Route path = "/SignUp" element = {<Signin setLogout={setLogout} /> }></Route>
+      <Route path = "/" element = {<Dashboard logout={logout} handleLogout={handleLogout}/>}></Route>
       </Routes>
       
     </div>

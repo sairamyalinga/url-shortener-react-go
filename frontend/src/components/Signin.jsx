@@ -1,9 +1,14 @@
+import PropTypes from 'prop-types';
 import { useState } from 'react';
-import axios from 'axios'
+import axios from 'axios';
+import { useNavigate } from "react-router-dom";
 
 
-function Signin() {
+
+function Signin({ setLogout }) {
     const [changeForm, setChangeForm] = useState(false);
+   
+    const navigate = useNavigate();
 
     const handlelogin = (event) => {
         event.preventDefault();
@@ -15,6 +20,9 @@ function Signin() {
           const jwtToken = response.data.JWTtoken;  
           console.log(response.data.JWTtoken);
           localStorage.setItem('token', jwtToken);
+          navigate("/");
+          setLogout(true);
+         
           
         })
         .catch(error =>{
@@ -22,6 +30,7 @@ function Signin() {
         });
 
     }
+
 
     const handlesignup = (event) => {
         event.preventDefault();
@@ -33,7 +42,11 @@ function Signin() {
             
           console.log(response.data?.Alert);
           alert(response.data?.Alert || 'Sign Up Success!');
-          setChangeForm(false);
+
+          setTimeout(() => {
+            setChangeForm(false);
+          }, 1000);
+          
        
           
         })
@@ -78,5 +91,7 @@ function Signin() {
         </div>
     );
 }
-
+Signin.propTypes = {
+    setLogout: PropTypes.func.isRequired
+  };
 export default Signin;

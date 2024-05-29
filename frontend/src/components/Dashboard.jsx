@@ -1,8 +1,9 @@
+import PropTypes from 'prop-types';
 import { useState } from 'react'
 import Header from './Header.jsx'
 import axios from 'axios'
 
-function Dashboard(){
+function Dashboard({ logout, handleLogout }){
     const [shortURL, setShortURL] = useState('');
     const [showURL, setShowURL] = useState(false);
   
@@ -38,7 +39,8 @@ function Dashboard(){
 
     return (
         <div>
-        <Header/>
+        <Header logout={logout} handleLogout={handleLogout}/>
+        
         <div className="container" style={{ marginTop: '200px' }}>
         <div className="row">
           <div className="col-md-8">
@@ -62,5 +64,10 @@ function Dashboard(){
     );
   
 }
+
+Dashboard.propTypes = {
+  logout: PropTypes.bool.isRequired,
+  handleLogout: PropTypes.func.isRequired
+};
 
 export default Dashboard;
