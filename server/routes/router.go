@@ -24,7 +24,7 @@ func Router() *mux.Router {
 
 	middlerouter := router.PathPrefix("/api").Subrouter()
 	middlerouter.Use(middleware.JWTMiddleware)
-	middlerouter.HandleFunc("/api/shorturl", CreateUrl).Methods("POST")
+	middlerouter.HandleFunc("/shorturl", CreateUrl).Methods("POST")
 	router.HandleFunc("/{id}", RedirectUrl).Methods("GET")
 
 	return router
