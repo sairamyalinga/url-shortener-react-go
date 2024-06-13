@@ -60,6 +60,7 @@ function Signin() {
     
     return (
         <div className="bg-container">
+            <h1 className='position-absolute top-0 start-5 m-3 text-black'>ShortURL</h1>
             <div className="form-box">
                 <div className="toggle-area">
                     <button 
