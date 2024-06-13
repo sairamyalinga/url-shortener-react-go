@@ -1,37 +1,37 @@
-import { useEffect, useState } from 'react';
+import { useEffect} from 'react';
 import './App.css'
 import Dashboard from './components/Dashboard';
-import { BrowserRouter, Routes, Route } from "react-router-dom"
+import { Routes, Route } from "react-router-dom"
 import Signin from './components/Signin';
+import { useNavigate, useLocation } from "react-router-dom";
 
 
 function App() {
 
-  const [logout, setLogout] = useState(false);
-
-  useEffect(()=>{
-    if (localStorage.getItem('token') == null){
-      setLogout(false)
-    }else{
-      setLogout(true)
+  
+  const navigate = useNavigate();
+  const location = useLocation();
+  const curr_path = location.pathname;
+  useEffect(() => {
+    if (!localStorage.getItem('token') && curr_path !== "/") {
+      navigate("/");
     }
-  }, []);
+  }, [curr_path, navigate]);
 
   const handleLogout = () => {
     localStorage.removeItem('token');
-      setLogout(false)
+      navigate("/")
+      
   };
 
   return (
-    <BrowserRouter>
     <div>
       <Routes>
-      <Route path = "/SignUp" element = {<Signin setLogout={setLogout} /> }></Route>
-      <Route path = "/" element = {<Dashboard logout={logout} handleLogout={handleLogout}  setLogout={setLogout}/>}></Route>
+      <Route path = "/" element = {<Signin /> }></Route>
+      <Route path = "/dashboard" element = {<Dashboard handleLogout={handleLogout}  />}></Route>
       </Routes>
       
     </div>
-    </BrowserRouter>
   );
 }
 

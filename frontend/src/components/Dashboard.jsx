@@ -3,16 +3,26 @@ import { useState } from 'react'
 import Header from './Header.jsx'
 import axios from 'axios'
 
-function Dashboard({ logout, handleLogout}){
+function Dashboard({ handleLogout}){
     const [shortURL, setShortURL] = useState('');
     const [showURL, setShowURL] = useState(false);
+    
 
   
   
     const handleClick = () =>{
       const requestData = document.getElementById('urlinput').value;
       console.log(requestData)
-      axios.post('http://localhost:5050/api/shorturl',{url:requestData})
+      let token = ""
+      if (localStorage.getItem('token') != null){
+          token = localStorage.getItem('token');
+          console.log(token);
+      }
+      axios.post('http://localhost:5050/api/shorturl',{url:requestData},{
+        headers:{
+          Authorization: `Bearer ${token}`
+
+      }})
         .then(response =>{
           console.log(response.data)
           setShortURL(response.data.shortURL)
@@ -41,7 +51,7 @@ function Dashboard({ logout, handleLogout}){
 
     return (
         <div>
-        <Header logout={logout} handleLogout={handleLogout}/>
+        <Header handleLogout={handleLogout}/>
         
         <div className="container" style={{ marginTop: '200px' }}>
         <div className="row">
@@ -68,7 +78,7 @@ function Dashboard({ logout, handleLogout}){
 }
 
 Dashboard.propTypes = {
-  logout: PropTypes.bool.isRequired,
+  
   handleLogout: PropTypes.func.isRequired
 }
 

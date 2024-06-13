@@ -1,11 +1,10 @@
-import PropTypes from 'prop-types';
 import { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from "react-router-dom";
 
 
 
-function Signin({ setLogout }) {
+function Signin() {
     const [changeForm, setChangeForm] = useState(false);
     
    
@@ -19,10 +18,10 @@ function Signin({ setLogout }) {
         axios.post('http://localhost:5050/api/login',{user_name:username, password:pwd})
         .then(response =>{
           const jwtToken = response.data.JWTtoken;  
-          console.log(response.data.JWTtoken);
+        //   console.log(response.data.JWTtoken);
           localStorage.setItem('token', jwtToken);
-          navigate("/");
-          setLogout(true);
+          navigate("/dashboard");
+          
          
           
         })
@@ -92,7 +91,5 @@ function Signin({ setLogout }) {
         </div>
     );
 }
-Signin.propTypes = {
-    setLogout: PropTypes.func.isRequired
-  };
+
 export default Signin;

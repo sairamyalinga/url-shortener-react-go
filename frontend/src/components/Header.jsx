@@ -1,21 +1,17 @@
 import PropTypes from 'prop-types';
 import logo from '/logo.jpeg'
 import {IoIosLink} from "react-icons/io";
-import { useNavigate } from "react-router-dom";
 
-function Header({ logout, handleLogout }){
 
-  const navigate = useNavigate();
- 
-    const signInPage = () => {
-      navigate("/signup")
-    }
+function Header({ handleLogout }){
+
+  
     
   return (
   <header className="header">
       <div>
         <img src={logo} alt="logo" className="img-fluid float-end" style ={{height:"550px"}} />
-        {logout?(<button className="sign-up-button" onClick={handleLogout}>Logout</button>):<button className="sign-up-button" onClick = {signInPage}>Sign In</button>}
+        <button className="sign-up-button" onClick={handleLogout}>Logout</button>
         </div>
         <div className="card-body">
           <h1 className="card-title" >ShortURL <IoIosLink/></h1>
@@ -26,7 +22,6 @@ function Header({ logout, handleLogout }){
 }
 
 Header.propTypes = {
-  logout: PropTypes.bool.isRequired,
   handleLogout: PropTypes.func.isRequired
 };
 
