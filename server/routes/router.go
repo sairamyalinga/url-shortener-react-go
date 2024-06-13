@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"net/url"
 	connection "urlShortener/server/db"
+	middleware "urlShortener/server/middleware"
 
 	"github.com/gorilla/mux"
 	"go.mongodb.org/mongo-driver/bson"
@@ -20,7 +21,10 @@ func Router() *mux.Router {
 	router := mux.NewRouter()
 	router.HandleFunc("/api/signup", RegisterUser).Methods("POST")
 	router.HandleFunc("/api/login", Signin).Methods("POST")
-	router.HandleFunc("/api/shorturl", CreateUrl).Methods("POST")
+
+	middlerouter := router.PathPrefix("/api").Subrouter()
+	middlerouter.Use(middleware.JWTMiddleware)
+	middlerouter.HandleFunc("/api/shorturl", CreateUrl).Methods("POST")
 	router.HandleFunc("/{id}", RedirectUrl).Methods("GET")
 
 	return router
@@ -43,6 +47,7 @@ func isValidURL(urlObj string) bool{
 
 
 }
+
 func insertURL(ctx context.Context, collection *mongo.Collection, object  map[string]string) (string) {
 	
 	doc := connection.URLStrings{Url:object["url"]}
@@ -69,8 +74,6 @@ func insertURL(ctx context.Context, collection *mongo.Collection, object  map[st
     fmt.Println("Inserted New document with shortID:", shortID)
 
 	return shortID
-
-
 }
 
 func CreateUrl(w http.ResponseWriter, r *http.Request) {
