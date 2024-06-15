@@ -1,14 +1,18 @@
 package middleware
 
 import (
+	"context"
 	"fmt"
 	"net/http"
-	"strings"
-	"github.com/golang-jwt/jwt/v5"
 	"os"
+	"strings"
+
+	"github.com/golang-jwt/jwt/v5"
 )
 
 var secretKey = []byte(os.Getenv("JWT_KEY"))
+type ContextKeyType string
+const UsernameContextKey ContextKeyType = "username"
 
 func JWTMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request){
@@ -28,7 +32,22 @@ func JWTMiddleware(next http.Handler) http.Handler {
 			w.WriteHeader(http.StatusUnauthorized)
 			return
 		}
-		next.ServeHTTP(w, r)
+		claims, ok := token.Claims.(jwt.MapClaims)
+		if !ok || !token.Valid {
+            w.WriteHeader(http.StatusUnauthorized)
+            return
+        }
+
+        username, ok := claims["sub"].(string)
+
+		if !ok {
+			http.Error(w, "Invalid username in token", http.StatusUnauthorized)
+			return
+		}
+		
+		ctx := context.WithValue(r.Context(), UsernameContextKey, username)
+
+		next.ServeHTTP(w, r.WithContext(ctx))
 		
 	})
 

@@ -21,11 +21,12 @@ func Router() *mux.Router {
 	router := mux.NewRouter()
 	router.HandleFunc("/api/signup", RegisterUser).Methods("POST")
 	router.HandleFunc("/api/login", Signin).Methods("POST")
+	router.HandleFunc("/{id}", RedirectUrl).Methods("GET")
 
 	middlerouter := router.PathPrefix("/api").Subrouter()
 	middlerouter.Use(middleware.JWTMiddleware)
 	middlerouter.HandleFunc("/shorturl", CreateUrl).Methods("POST")
-	router.HandleFunc("/{id}", RedirectUrl).Methods("GET")
+	middlerouter.HandleFunc("/geturls", GetallURLs).Methods("GET")
 
 	return router
 }
@@ -48,9 +49,9 @@ func isValidURL(urlObj string) bool{
 
 }
 
-func insertURL(ctx context.Context, collection *mongo.Collection, object  map[string]string) (string) {
+func insertURL(collection *mongo.Collection, object  map[string]string, userName string) (string) {
 	
-	doc := connection.URLStrings{Url:object["url"]}
+	doc := connection.URLStrings{Url:object["url"], UserName:userName}
 
 	res, err := collection.InsertOne(context.TODO(), doc)
 	if err!= nil{
@@ -89,18 +90,19 @@ func CreateUrl(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Invalid request body", http.StatusBadRequest)
 		return
 	}
+	username := r.Context().Value(middleware.UsernameContextKey).(string)
 	client := connection.GetClient()
 	collection := client.Database("go").Collection("urlStrings")
 	
 	
 	if isValidURL(urlData["url"]) {
-		fmt.Println("hi")
-		id := insertURL(r.Context(), collection, urlData)
+		// fmt.Println("hi")
+		id := insertURL(collection, urlData, username)
 		shortURL := "http://localhost:5050/" + id
         w.WriteHeader(http.StatusOK)
         json.NewEncoder(w).Encode(map[string]string{"shortURL": shortURL})
 	} else {
-		fmt.Println("bye")
+		// fmt.Println("bye")
 		http.Error(w, "Invalid URL", http.StatusBadRequest)
 		return
 	}
@@ -131,4 +133,34 @@ func RedirectUrl(w http.ResponseWriter, r *http.Request) {
 
 
 }
+
+func GetallURLs(w http.ResponseWriter, r *http.Request){
+	username := r.Context().Value(middleware.UsernameContextKey).(string)
+	filter := bson.D{{Key: "user_name", Value: username}}
+	client := connection.GetClient()
+	collection := client.Database("go").Collection("urlStrings")
+	cursor, err  := collection.Find(context.TODO(), filter)
+	if err != nil {
+		http.Error(w, "Error fetching URLs", http.StatusInternalServerError)
+		return
+	}
+	defer cursor.Close(context.TODO())
+
+
+	var urls []string
+	for cursor.Next(context.TODO()){
+		var urlDoc struct{
+			url string `bson:"url"`
+		}
+		if err := cursor.Decode(&urlDoc); err != nil{
+			http.Error(w, "Error parsing URL document", http.StatusInternalServerError)
+			return
+		}
+		urls = append(urls, urlDoc.url)
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(urls)
+}
+
 

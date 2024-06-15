@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"os"
 	"time"
-
 	"github.com/joho/godotenv"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -16,7 +15,8 @@ import (
 type URLStrings struct {
 	Url string             `bson:"url, omitempty"`
 	Id primitive.ObjectID `bson:"_id,omitempty"`
-	ShortID string             `bson:"shortID,omitempty"`
+	ShortID string         `bson:"shortID,omitempty"`
+	UserName string 		`json:"user_name"`
 }
 
 type User struct {
@@ -37,11 +37,8 @@ func init() {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	serverAPI := options.ServerAPI(options.ServerAPIVersion1)
-
-	// fmt.Println(os.Getenv("MONGODB_URI"))
 	var err error
 	client, err = mongo.Connect(ctx, options.Client().ApplyURI(os.Getenv("MONGODB_URI")).SetServerAPIOptions(serverAPI))
-
 	// client = mclient
 	if err != nil {
 		fmt.Println("Error connecting to MongoDB:", err)

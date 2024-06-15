@@ -39,7 +39,6 @@ func RegisterUser(w http.ResponseWriter, r *http.Request){
 
 	validate := validator.New()
 	var user connection.User
-
 	if err := json.NewDecoder(r.Body).Decode(&user); err != nil {
 		fmt.Println(err)
 		http.Error(w, "Invalid request body", http.StatusBadRequest)
