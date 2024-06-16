@@ -2,28 +2,20 @@ import { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from "react-router-dom";
 
-
-
 function Signin() {
+
     const [changeForm, setChangeForm] = useState(false);
-    
-   
     const navigate = useNavigate();
 
     const handlelogin = (event) => {
         event.preventDefault();
         const username = document.getElementById("loginuser").value;
         const pwd = document.getElementById("loginpwd").value;
-        
         axios.post('http://localhost:5050/api/login',{user_name:username, password:pwd})
         .then(response =>{
           const jwtToken = response.data.JWTtoken;  
-        //   console.log(response.data.JWTtoken);
           localStorage.setItem('token', jwtToken);
-          navigate("/dashboard");
-          
-         
-          
+          navigate("/dashboard");  
         })
         .catch(error =>{
           console.log('Error', error)
@@ -31,31 +23,21 @@ function Signin() {
 
     }
 
-
     const handlesignup = (event) => {
         event.preventDefault();
         const username = document.getElementById("signupuser").value;
-        const pwd = document.getElementById("signuppwd").value;
-        
+        const pwd = document.getElementById("signuppwd").value; 
         axios.post('http://localhost:5050/api/signup',{user_name:username, password:pwd})
-        .then(response =>{
-            
-          console.log(response.data?.Alert);
+        .then(response =>{    
           alert(response.data?.Alert || 'Sign Up Success!');
-
           setTimeout(() => {
             setChangeForm(false);
           }, 1000);
-          
-       
-          
         })
         .catch(error =>{
           console.log('Error', error)
           alert('Sign Up Failed! Try again.');
-
         });
-
     }
     
     return (

@@ -4,14 +4,14 @@ import Dashboard from './components/Dashboard';
 import { Routes, Route } from "react-router-dom"
 import Signin from './components/Signin';
 import { useNavigate, useLocation } from "react-router-dom";
-
+import Urlboard from "./components/Urlboard"
 
 function App() {
 
-  
   const navigate = useNavigate();
   const location = useLocation();
   const curr_path = location.pathname;
+
   useEffect(() => {
     if (!localStorage.getItem('token') && curr_path !== "/") {
       navigate("/");
@@ -20,8 +20,7 @@ function App() {
 
   const handleLogout = () => {
     localStorage.removeItem('token');
-      navigate("/")
-      
+      navigate("/")    
   };
 
   return (
@@ -29,8 +28,8 @@ function App() {
       <Routes>
       <Route path = "/" element = {<Signin /> }></Route>
       <Route path = "/dashboard" element = {<Dashboard handleLogout={handleLogout}  />}></Route>
-      </Routes>
-      
+      <Route path ="/urlboard" element={<Urlboard/>}></Route>
+      </Routes>  
     </div>
   );
 }

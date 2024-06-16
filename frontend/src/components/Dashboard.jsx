@@ -4,15 +4,12 @@ import Header from './Header.jsx'
 import axios from 'axios'
 
 function Dashboard({ handleLogout}){
+
     const [shortURL, setShortURL] = useState('');
     const [showURL, setShowURL] = useState(false);
-    
 
-  
-  
     const handleClick = () =>{
       const requestData = document.getElementById('urlinput').value;
-      console.log(requestData)
       let token = ""
       if (localStorage.getItem('token') != null){
           token = localStorage.getItem('token');
@@ -36,7 +33,6 @@ function Dashboard({ handleLogout}){
     const handleCopyToClipboard = () =>{
       navigator.clipboard.writeText(shortURL)
       .then(() => {
-        console.log('Text copied to clipboard');
         alert('ShortURL copied to clipboard!');
       })
       .catch(err => {
@@ -52,7 +48,6 @@ function Dashboard({ handleLogout}){
     return (
         <div>
         <Header handleLogout={handleLogout}/>
-        
         <div className="container" style={{ marginTop: '200px' }}>
         <div className="row">
           <div className="col-md-8">
@@ -73,12 +68,10 @@ function Dashboard({ handleLogout}){
         </div>
       </div>
       </div>
-    );
-  
+    );  
 }
 
-Dashboard.propTypes = {
-  
+Dashboard.propTypes = { 
   handleLogout: PropTypes.func.isRequired
 }
 
