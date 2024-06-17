@@ -136,7 +136,7 @@ func RedirectUrl(w http.ResponseWriter, r *http.Request) {
 
 func GetallURLs(w http.ResponseWriter, r *http.Request){
 	username := r.Context().Value(middleware.UsernameContextKey).(string)
-	filter := bson.D{{Key: "user_name", Value: username}}
+	filter := bson.D{{Key: "username", Value: username}}
 	client := connection.GetClient()
 	collection := client.Database("go").Collection("urlStrings")
 	cursor, err  := collection.Find(context.TODO(), filter)
@@ -146,19 +146,22 @@ func GetallURLs(w http.ResponseWriter, r *http.Request){
 	}
 	defer cursor.Close(context.TODO())
 
-
-	var urls []string
+	var urls []map[string]string
 	for cursor.Next(context.TODO()){
-		var urlDoc struct{
-			url string `bson:"url"`
-		}
+		// fmt.Println("cursor", cursor)
+		var urlDoc connection.URLStrings
 		if err := cursor.Decode(&urlDoc); err != nil{
 			http.Error(w, "Error parsing URL document", http.StatusInternalServerError)
 			return
 		}
-		urls = append(urls, urlDoc.url)
+		responseURL := map[string]string{
+			"Url":     urlDoc.Url,
+			"ShortID": "http://localhost:5050/" + urlDoc.ShortID,
+		}
+		urls = append(urls, responseURL)
+		fmt.Println("hi",responseURL)
 	}
-
+	fmt.Println("URLS",urls)
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(urls)
 }
