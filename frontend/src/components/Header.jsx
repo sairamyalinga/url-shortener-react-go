@@ -4,11 +4,16 @@ import {IoIosLink} from "react-icons/io";
 import { useNavigate } from 'react-router-dom';
 
 
-function Header({ handleLogout }){
+function Header({ handleLogout, page }){
 
   const navigate = useNavigate()
-  const handleGetUrls = () => {
+  const handleBoards = () => {
+    if (page !== "urlboard"){
     navigate("/urlboard")
+    }
+    else{
+      navigate("/dashboard")
+    }
 
 
   }
@@ -18,7 +23,7 @@ function Header({ handleLogout }){
       <div>
         <img src={logo} alt="logo" className="img-fluid float-end" style ={{height:"550px"}} />
         <button className="sign-up-button" onClick={handleLogout}>Logout</button>
-        <button className='urls-button' onClick={handleGetUrls}>My URLs</button>
+        <button className='urls-button' onClick={handleBoards}>{page === "urlboard"?"Create ShortURL": "Get URLS"}</button>
         </div>
         <div className="card-body">
           <h1 className="card-title" >ShortURL <IoIosLink/></h1>
@@ -28,7 +33,8 @@ function Header({ handleLogout }){
 }
 
 Header.propTypes = {
-  handleLogout: PropTypes.func.isRequired
+  handleLogout: PropTypes.func.isRequired,
+  page: PropTypes.string
 };
 
 export default Header;

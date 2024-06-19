@@ -28,7 +28,7 @@ function App() {
       <Routes>
       <Route path = "/" element = {<Signin /> }></Route>
       <Route path = "/dashboard" element = {<Dashboard handleLogout={handleLogout}  />}></Route>
-      <Route path ="/urlboard" element={<Urlboard/>}></Route>
+      <Route path ="/urlboard" element={<Urlboard handleLogout={handleLogout}/>}></Route>
       </Routes>  
     </div>
   );

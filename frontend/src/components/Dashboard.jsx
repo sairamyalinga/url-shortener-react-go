@@ -2,6 +2,7 @@ import PropTypes from 'prop-types';
 import { useState } from 'react'
 import Header from './Header.jsx'
 import axios from 'axios'
+import { handleCopyToClipboard } from '../lib/utils.js';
 
 function Dashboard({ handleLogout}){
 
@@ -30,15 +31,15 @@ function Dashboard({ handleLogout}){
         });
     };
   
-    const handleCopyToClipboard = () =>{
-      navigator.clipboard.writeText(shortURL)
-      .then(() => {
-        alert('ShortURL copied to clipboard!');
-      })
-      .catch(err => {
-        console.error('Failed to copy text: ', err);
-      });
-    };
+    // const handleCopyToClipboard = () =>{
+    //   navigator.clipboard.writeText(shortURL)
+    //   .then(() => {
+    //     alert('ShortURL copied to clipboard!');
+    //   })
+    //   .catch(err => {
+    //     console.error('Failed to copy text: ', err);
+    //   });
+    // };
   
     const handleClose = () =>{
       setShowURL(false)
@@ -59,7 +60,7 @@ function Dashboard({ handleLogout}){
             {showURL && (
         <div className="short-url-container">
           <p>Short URL: {shortURL}</p>
-          <button className="btn btn-secondary" onClick={handleCopyToClipboard}>Copy to Clipboard</button>
+          <button className="btn btn-secondary" onClick={() => ( handleCopyToClipboard(shortURL) )}>Copy to Clipboard</button>
           <button className="btn btn-danger" onClick={handleClose}>Close</button>
         </div>
       )}
