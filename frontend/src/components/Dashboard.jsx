@@ -8,13 +8,14 @@ function Dashboard({ handleLogout}){
 
     const [shortURL, setShortURL] = useState('');
     const [showURL, setShowURL] = useState(false);
+    const [err, setErr] = useState('');
 
     const handleClick = () =>{
       const requestData = document.getElementById('urlinput').value;
       let token = ""
       if (localStorage.getItem('token') != null){
           token = localStorage.getItem('token');
-          console.log(token);
+          // console.log(token);
       }
       axios.post('http://localhost:5050/api/shorturl',{url:requestData},{
         headers:{
@@ -26,8 +27,9 @@ function Dashboard({ handleLogout}){
           setShortURL(response.data.shortURL)
           setShowURL(true)
         })
-        .catch(error =>{
-          console.log('Error', error)
+        .catch((error) =>{
+          setShortURL('')
+          setErr(error)
         });
     };
   
@@ -57,13 +59,19 @@ function Dashboard({ handleLogout}){
               <button type="button" className="btn btn-info" onClick={handleClick} >Shorten!</button>
             </div>
             <div>
-            {showURL && (
-        <div className="short-url-container">
-          <p>Short URL: {shortURL}</p>
-          <button className="btn btn-secondary" onClick={() => ( handleCopyToClipboard(shortURL) )}>Copy to Clipboard</button>
-          <button className="btn btn-danger" onClick={handleClose}>Close</button>
-        </div>
-      )}
+            {showURL ? 
+            
+              (<div className="short-url-container">
+                  <p>Short URL: {shortURL}</p>
+                  <button className="btn btn-secondary" onClick={() => ( handleCopyToClipboard(shortURL) )}>Copy to Clipboard</button>
+                  <button className="btn btn-danger" onClick={handleClose}>Close</button>
+              </div>):
+              
+             (err && (
+             <div className="p-3  text-danger fw-bold">
+                Provide Valid URL
+              </div>
+              ))}
           </div>
           </div>
         </div>
