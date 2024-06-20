@@ -33,16 +33,7 @@ function Dashboard({ handleLogout}){
         });
     };
   
-    // const handleCopyToClipboard = () =>{
-    //   navigator.clipboard.writeText(shortURL)
-    //   .then(() => {
-    //     alert('ShortURL copied to clipboard!');
-    //   })
-    //   .catch(err => {
-    //     console.error('Failed to copy text: ', err);
-    //   });
-    // };
-  
+    
     const handleClose = () =>{
       setShowURL(false)
       setShortURL('')

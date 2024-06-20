@@ -46,13 +46,16 @@ function Urlboard({handleLogout}){
     return (
         <div>
             <Header handleLogout={handleLogout} page = "urlboard"/>
-            {data && data.map((url, index) => (
+            {data ? (data.map((url, index) => (
                 
                 <Urlitem
                 key={index}
                 url={url}/>
                 
-            ))}
+            ))):(<div className="d-flex align-items-center justify-content-center">
+            <div className="badge text-bg-info text-wrap fs-5 fst-italic"> No shortURLs in your account.</div>
+            </div>
+            )}
         </div>
     );
 }
