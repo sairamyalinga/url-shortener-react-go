@@ -10,10 +10,10 @@ function Urlitem({url}){
     <div className="card border border-0 mb-3 mx-5">
       <div className="card-body rounded border border-info bg-info-subtle text-info-emphasis">
         <div className="d-flex justify-content-between align-items-center  ">
-          <p className="mb-0">Short URL: <a href={`${url.ShortID}`}>{`${url.ShortID}`}</a></p>
+          <p className="mb-0">Short URL: <a href={`${url.ShortURL}`}>{`${url.ShortURL}`}</a></p>
           <div >
             <button className="btn btn-secondary btn-sm mr-2 mx-4" onClick={() => (
-                handleCopyToClipboard(url.ShortID)
+                handleCopyToClipboard(url.ShortURL)
             )}>
               Copy
             </button>
