@@ -1,10 +1,10 @@
-
-export const handleCopyToClipboard = (data) =>{
-    navigator.clipboard.writeText(data)
+export const handleCopyToClipboard = (data) => {
+  navigator.clipboard
+    .writeText(data)
     .then(() => {
-      alert('ShortURL copied to clipboard!');
+      alert("ShortURL copied to clipboard!");
     })
-    .catch(err => {
-      console.error('Failed to copy text: ', err);
+    .catch((err) => {
+      console.error("Failed to copy text: ", err);
     });
-  };
+};

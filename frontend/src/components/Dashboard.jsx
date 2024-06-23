@@ -15,7 +15,7 @@ function Dashboard({ handleLogout}){
       let token = ""
       if (localStorage.getItem('token') != null){
           token = localStorage.getItem('token');
-          // console.log(token);
+          
       }
       axios.post('http://localhost:5050/api/shorturl',{url:requestData},{
         headers:{
