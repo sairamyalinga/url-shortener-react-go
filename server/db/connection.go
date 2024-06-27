@@ -13,9 +13,9 @@ import (
 )
 
 type DBConnection struct {
-	MongoClient   *mongo.Client
-	Database      *mongo.Database
-	URLCollection *mongo.Collection
+	mongoClient   *mongo.Client
+	database      *mongo.Database
+	urlCollection *mongo.Collection
 }
 
 func (c *DBConnection) init() {
@@ -27,12 +27,12 @@ func (c *DBConnection) init() {
 	defer cancel()
 	serverAPI := options.ServerAPI(options.ServerAPIVersion1)
 	var err error
-	c.MongoClient, err = mongo.Connect(ctx, options.Client().ApplyURI(os.Getenv("MONGODB_URI")).SetServerAPIOptions(serverAPI))
+	c.mongoClient, err = mongo.Connect(ctx, options.Client().ApplyURI(os.Getenv("MONGODB_URI")).SetServerAPIOptions(serverAPI))
 	if err != nil {
 		fmt.Println("Error connecting to MongoDB:", err)
 		return
 	}
 
-	c.Database = c.MongoClient.Database("go")
-	c.URLCollection = c.Database.Collection("urlStrings")
+	c.database = c.mongoClient.Database("go")
+	c.urlCollection = c.database.Collection("urlStrings")
 }
