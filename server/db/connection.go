@@ -12,10 +12,11 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-var client *mongo.Client
+type DBConnection struct {
+	MongoClient *mongo.Client
+}
 
-func init() {
-
+func (c *DBConnection) init() {
 	if err := godotenv.Load(); err != nil {
 		log.Fatalf("No env file found in the directory")
 	}
@@ -24,14 +25,9 @@ func init() {
 	defer cancel()
 	serverAPI := options.ServerAPI(options.ServerAPIVersion1)
 	var err error
-	client, err = mongo.Connect(ctx, options.Client().ApplyURI(os.Getenv("MONGODB_URI")).SetServerAPIOptions(serverAPI))
+	c.MongoClient, err = mongo.Connect(ctx, options.Client().ApplyURI(os.Getenv("MONGODB_URI")).SetServerAPIOptions(serverAPI))
 	if err != nil {
 		fmt.Println("Error connecting to MongoDB:", err)
 		return
 	}
-
-}
-
-func GetClient() *mongo.Client {
-	return client
 }
