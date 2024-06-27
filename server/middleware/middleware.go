@@ -10,7 +10,7 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
-var secretKey = []byte(os.Getenv("JWT_KEY"))
+var secretKey = []byte(os.Getenv("JWT_KEY")) // duplicated in auth.go. dont
 type ContextKeyType string
 const UsernameContextKey ContextKeyType = "username"
 
@@ -41,7 +41,7 @@ func JWTMiddleware(next http.Handler) http.Handler {
         username, ok := claims["sub"].(string)
 
 		if !ok {
-			http.Error(w, "Invalid username in token", http.StatusUnauthorized)
+			http.Error(w, "Invalid username in token", http.StatusUnauthorized) //send json res
 			return
 		}
 		

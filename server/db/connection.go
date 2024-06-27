@@ -13,7 +13,9 @@ import (
 )
 
 type DBConnection struct {
-	MongoClient *mongo.Client
+	MongoClient   *mongo.Client
+	Database      *mongo.Database
+	URLCollection *mongo.Collection
 }
 
 func (c *DBConnection) init() {
@@ -30,4 +32,7 @@ func (c *DBConnection) init() {
 		fmt.Println("Error connecting to MongoDB:", err)
 		return
 	}
+
+	c.Database = c.MongoClient.Database("go")
+	c.URLCollection = c.Database.Collection("urlStrings")
 }

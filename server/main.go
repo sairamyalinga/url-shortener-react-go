@@ -4,7 +4,7 @@ import (
 	"log"
 	"net/http"
 	"os"
-	router "urlShortener/server/routes"
+	router "urlShortener/server/router"
 
 	"github.com/gorilla/handlers"
 )
