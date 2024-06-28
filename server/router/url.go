@@ -10,22 +10,26 @@ import (
 	"os"
 	"time"
 
+	utils "urlShortener/server/common"
 	connection "urlShortener/server/db"
 	"urlShortener/server/middleware"
+
+	"github.com/gorilla/mux"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
 type URLProcessor struct {
 	db *connection.DBConnection
 }
 
-func (ul *URLProcessor) isValidURL(urlObj string) bool {
-
+func (ul *URLProcessor) isValidURL(ctx context.Context,urlObj string) bool {
 	u, err := url.Parse(urlObj)
+
 	if err != nil {
 		fmt.Println("Cannot parse the URL")
 		return false
-
 	}
+
 	if u.Path != "" {
 		client := http.Client{
 			Timeout: 5 * time.Second,
@@ -42,6 +46,7 @@ func (ul *URLProcessor) isValidURL(urlObj string) bool {
 			return false
 		}
 	}
+
 	ips, err := net.DefaultResolver.LookupIPAddr(context.Background(), u.Hostname()) // use req context
 	if err != nil {
 		return false
@@ -52,32 +57,73 @@ func (ul *URLProcessor) isValidURL(urlObj string) bool {
 
 func (ul *URLProcessor) CreateURL(w http.ResponseWriter, r *http.Request) {
 	var urlData map[string]string
-
 	if err := json.NewDecoder(r.Body).Decode(&urlData); err != nil {
 		fmt.Println(err)
 		http.Error(w, "Invalid request body", http.StatusBadRequest)
 		return
 	}
-
 	username := r.Context().Value(middleware.UsernameContextKey).(string)
-
 	rootDomain := os.Getenv("ROOT")
 
-	if ul.isValidURL(urlData["url"]) {
-		id, err := ul.db.InsertURL(r.Context(), connection.URLStrings{Username: username, URL: urlData["url"]})
-
+	if ul.isValidURL(r.Context(),urlData["url"]) {
+		id, err := ul.db.InsertURL(r.Context(), connection.ShortURL{Username: username, URL: urlData["url"]})
 		if err != nil {
-			fmt.Println(err)
-			http.Error(w, "Internal error", http.StatusInternalServerError)
+			utils.Response(w, nil, http.StatusInternalServerError, "Internal error")
 			return
 		}
-
 		shortURL := rootDomain + id
-		w.WriteHeader(http.StatusCreated)
-		json.NewEncoder(w).Encode(map[string]string{"shortURL": shortURL})
+		utils.Response(w, map[string]string{"shortURL": shortURL}, http.StatusCreated, "Created shortURL")
+
 	} else {
-		http.Error(w, "Invalid URL", http.StatusBadRequest)
+		utils.Response(w, nil, http.StatusBadRequest, "Invalid URL")
 		return
 	}
 
+}
+
+func (ul *URLProcessor) RedirectUrl(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+	urlRecord, err := ul.db.GetURLByID(r.Context(), params["id"])
+
+	if err == mongo.ErrNoDocuments {
+		utils.Response(w, nil, http.StatusNotFound, "URL not found")
+		return
+	}
+	if err != nil {
+		utils.Response(w, nil, http.StatusInternalServerError, "Error fetching URL document")
+		return
+	}
+
+	http.Redirect(w, r, urlRecord.URL, http.StatusFound)
+
+}
+
+func (ul *URLProcessor) GetallURLs(w http.ResponseWriter, r *http.Request) {
+	username := r.Context().Value(middleware.UsernameContextKey).(string)
+	urls, err := ul.db.GetAllURLsByUsername(r.Context(), username)
+	if err != nil {
+
+		utils.Response(w, nil, http.StatusInternalServerError, "Error fetching URLs")
+
+	}
+	utils.Response(w, urls, http.StatusOK, "Fetched URLs")
+
+}
+
+
+func (ul *URLProcessor) DeleteUrl(w http.ResponseWriter, r *http.Request) {
+	var requestBody map[string]string
+	if err := json.NewDecoder(r.Body).Decode(&requestBody); err != nil {
+		http.Error(w, "Invalid request body", http.StatusBadRequest)
+		return
+	}
+	shortID := requestBody["shortID"]
+	err := ul.db.DeleteURLByID(r.Context(), shortID)
+	if err != nil {
+		fmt.Printf("Failed to delete: %s", err)
+		utils.Response(w, nil, http.StatusInternalServerError, "Failed to delete")
+		return
+	}
+	utils.Response(w, nil, http.StatusOK, "Document Deleted Successfully")
+	
 }

@@ -1,17 +1,10 @@
 package router
 
 import (
-	"context"
-	"encoding/json"
-	"fmt"
-
-	"net/http"
-
 	connection "urlShortener/server/db"
 	middleware "urlShortener/server/middleware"
 
-	"github.com/gorilla/mux"
-	"go.mongodb.org/mongo-driver/bson"
+	"github.com/gorilla/mux"	
 )
 
 func Router() *mux.Router {
@@ -35,5 +28,3 @@ func Router() *mux.Router {
 	return router
 }
 
-// router has nothing to do with shortURL methods
-// move everything below to new folder/file
