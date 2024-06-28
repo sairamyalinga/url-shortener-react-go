@@ -22,7 +22,7 @@ type URLProcessor struct {
 	db *connection.DBConnection
 }
 
-func (ul *URLProcessor) isValidURL(ctx context.Context,urlObj string) bool {
+func (ul *URLProcessor) isValidURL(ctx context.Context, urlObj string) bool {
 	u, err := url.Parse(urlObj)
 
 	if err != nil {
@@ -47,7 +47,7 @@ func (ul *URLProcessor) isValidURL(ctx context.Context,urlObj string) bool {
 		}
 	}
 
-	ips, err := net.DefaultResolver.LookupIPAddr(context.Background(), u.Hostname()) // use req context
+	ips, err := net.DefaultResolver.LookupIPAddr(ctx, u.Hostname()) 
 	if err != nil {
 		return false
 	}
@@ -65,17 +65,17 @@ func (ul *URLProcessor) CreateURL(w http.ResponseWriter, r *http.Request) {
 	username := r.Context().Value(middleware.UsernameContextKey).(string)
 	rootDomain := os.Getenv("ROOT")
 
-	if ul.isValidURL(r.Context(),urlData["url"]) {
+	if ul.isValidURL(r.Context(), urlData["url"]) {
 		id, err := ul.db.InsertURL(r.Context(), connection.ShortURL{Username: username, URL: urlData["url"]})
 		if err != nil {
-			utils.Response(w, nil, http.StatusInternalServerError, "Internal error")
+			utils.SendJSONResponse(w, nil, http.StatusInternalServerError, "Internal error")
 			return
 		}
 		shortURL := rootDomain + id
-		utils.Response(w, map[string]string{"shortURL": shortURL}, http.StatusCreated, "Created shortURL")
+		utils.SendJSONResponse(w, map[string]string{"shortURL": shortURL}, http.StatusCreated, "Created shortURL")
 
 	} else {
-		utils.Response(w, nil, http.StatusBadRequest, "Invalid URL")
+		utils.SendJSONResponse(w, nil, http.StatusBadRequest, "Invalid URL")
 		return
 	}
 
@@ -86,11 +86,11 @@ func (ul *URLProcessor) RedirectUrl(w http.ResponseWriter, r *http.Request) {
 	urlRecord, err := ul.db.GetURLByID(r.Context(), params["id"])
 
 	if err == mongo.ErrNoDocuments {
-		utils.Response(w, nil, http.StatusNotFound, "URL not found")
+		utils.SendJSONResponse(w, nil, http.StatusNotFound, "URL not found")
 		return
 	}
 	if err != nil {
-		utils.Response(w, nil, http.StatusInternalServerError, "Error fetching URL document")
+		utils.SendJSONResponse(w, nil, http.StatusInternalServerError, "Error fetching URL document")
 		return
 	}
 
@@ -103,13 +103,12 @@ func (ul *URLProcessor) GetallURLs(w http.ResponseWriter, r *http.Request) {
 	urls, err := ul.db.GetAllURLsByUsername(r.Context(), username)
 	if err != nil {
 
-		utils.Response(w, nil, http.StatusInternalServerError, "Error fetching URLs")
+		utils.SendJSONResponse(w, nil, http.StatusInternalServerError, "Error fetching URLs")
 
 	}
-	utils.Response(w, urls, http.StatusOK, "Fetched URLs")
+	utils.SendJSONResponse(w, urls, http.StatusOK, "Fetched URLs")
 
 }
-
 
 func (ul *URLProcessor) DeleteUrl(w http.ResponseWriter, r *http.Request) {
 	var requestBody map[string]string
@@ -121,9 +120,9 @@ func (ul *URLProcessor) DeleteUrl(w http.ResponseWriter, r *http.Request) {
 	err := ul.db.DeleteURLByID(r.Context(), shortID)
 	if err != nil {
 		fmt.Printf("Failed to delete: %s", err)
-		utils.Response(w, nil, http.StatusInternalServerError, "Failed to delete")
+		utils.SendJSONResponse(w, nil, http.StatusInternalServerError, "Failed to delete")
 		return
 	}
-	utils.Response(w, nil, http.StatusOK, "Document Deleted Successfully")
-	
+	utils.SendJSONResponse(w, nil, http.StatusOK, "Document Deleted Successfully")
+
 }
