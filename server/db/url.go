@@ -6,6 +6,7 @@ import (
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
 type ShortURL struct {
@@ -16,34 +17,74 @@ type ShortURL struct {
 }
 
 func (db *DBConnection) InsertURL(ctx context.Context, document ShortURL) (string, error) {
-	res, err := db.urlCollection.InsertOne(ctx, document) // use req context
-	if err != nil {
-		return "", fmt.Errorf("Failed to insert the new document: %v", err)
+	callback := func(sesctx mongo.SessionContext) (interface{}, error) {
+		res, err := db.urlCollection.InsertOne(sesctx, document)
+		if err != nil {
+			return "", fmt.Errorf("failed to insert the new document: %v", err)
+		}
 
+		insertedID := res.InsertedID.(primitive.ObjectID)
+		shortID := insertedID.Hex()[18:]
+		_, err = db.urlCollection.UpdateOne(
+			sesctx,
+			bson.M{"_id": insertedID},
+			bson.M{"$set": bson.M{"shortID": shortID}},
+		)
+		if err != nil {
+			return "", fmt.Errorf("failed to update document with shortID: %v", err)
+		}
+
+		return shortID, nil
 	}
 
-	insertedID := res.InsertedID.(primitive.ObjectID)
-	shortID := insertedID.Hex()[18:]
-	_, err = db.urlCollection.UpdateOne( // this dependent db query should happen in a transaction to ensure atomicity - basic DBMS concept
-		ctx, //huh, different contexts doesn't help. use req.context
-		bson.M{"_id": insertedID},
-		bson.M{"$set": bson.M{"shortID": shortID}},
-	)
+	session, err := db.mongoClient.StartSession()
 	if err != nil {
-		return "", fmt.Errorf("Failed to update document with shortID: %v", err)
+		return "", err
 	}
-	return shortID, nil
-
+	defer session.EndSession(ctx)
+	result, err := session.WithTransaction(ctx, callback)
+	if err != nil {
+		return "", err
+	}
+	return result.(string), nil
 }
 
 func (db *DBConnection) GetURLByID(ctx context.Context, id string) (*ShortURL, error) {
 	var urlData ShortURL
-	res := db.urlCollection.FindOne(ctx, bson.M{"shortID": id}).Decode(&urlData) // use request context itself
-	if res != nil {                                                              //spaces????
-		// fmt.Println("No Short Url found") // incorrect case
-		// https://chatgpt.com/c/bad45add-cbd2-4063-a56f-f157c8cb884b
+	res := db.urlCollection.FindOne(ctx, bson.M{"shortID": id}).Decode(&urlData) 
+	if res != nil {
 		return nil, fmt.Errorf(res.Error())
 	}
 
 	return &urlData, nil
+}
+
+func (db *DBConnection) GetAllURLsByUsername(ctx context.Context, username string) ([]ShortURL, error) {
+	filter := bson.D{{Key: "username", Value: username}}
+
+	cursor, err := db.urlCollection.Find(ctx, filter)
+	if err != nil {
+		return nil, fmt.Errorf(cursor.Err().Error())
+	}
+	defer cursor.Close(ctx)
+
+	var urls []ShortURL
+	for cursor.Next(ctx) {
+		var urlDoc ShortURL
+		if err := cursor.Decode(&urlDoc); err != nil {
+			return nil, fmt.Errorf(err.Error())
+		}
+
+		urls = append(urls, urlDoc)
+	}
+	return urls, nil
+}
+
+func (db *DBConnection) DeleteURLByID(ctx context.Context, ID string) error {
+	filter := bson.D{{Key: "shortID", Value: ID}}
+	_, err := db.urlCollection.DeleteOne(context.TODO(), filter)
+	if err != nil {
+		return fmt.Errorf(err.Error())
+	}
+	return nil
 }
