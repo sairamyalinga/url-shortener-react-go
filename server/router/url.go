@@ -59,7 +59,7 @@ func (ul *URLProcessor) CreateURL(w http.ResponseWriter, r *http.Request) {
 	var urlData map[string]string
 	if err := json.NewDecoder(r.Body).Decode(&urlData); err != nil {
 		fmt.Println(err)
-		http.Error(w, "Invalid request body", http.StatusBadRequest)
+		utils.SendJSONResponse(w, nil, http.StatusBadRequest, "Invalid request body")
 		return
 	}
 	username := r.Context().Value(middleware.UsernameContextKey).(string)
