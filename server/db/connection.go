@@ -16,7 +16,9 @@ type DBConnection struct {
 	mongoClient   *mongo.Client
 	database      *mongo.Database
 	urlCollection *mongo.Collection
+	userCollection *mongo.Collection
 }
+
 
 func (c *DBConnection) init() {
 	if err := godotenv.Load(); err != nil {
