@@ -10,13 +10,14 @@ import (
 func Router() *mux.Router {
 	db := connection.DBConnection{}
 	ul := URLProcessor{db: &db}
+	um := UserMethods{db : &db}
 	router := mux.NewRouter()
 
 	router.HandleFunc("/{id}", ul.RedirectUrl).Methods("GET")
 
 	apiRouter := router.PathPrefix("/api/v1").Subrouter()
-	apiRouter.HandleFunc("/signup", RegisterUser).Methods("POST")
-	apiRouter.HandleFunc("/login", Signin).Methods("POST")
+	apiRouter.HandleFunc("/signup", um.RegisterUser).Methods("POST")
+	apiRouter.HandleFunc("/login", um.Signin).Methods("POST")
 
 	authenticatedRouter := apiRouter.NewRoute().Subrouter()
 	authenticatedRouter.Use(middleware.JWTMiddleware)

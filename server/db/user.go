@@ -25,7 +25,6 @@ func (db *DBConnection) InsertUser(ctx context.Context, user User) (error) {
 		return fmt.Errorf(UserExistErr)
 
 	} else if err != mongo.ErrNoDocuments {
-		// http.Error(w, "Error checking username availability", http.StatusInternalServerError) //bad response format
 		return fmt.Errorf("failed to signup. Try again : %v", err)
 	}
 	_, err = db.userCollection.InsertOne(ctx, user)
@@ -35,6 +34,12 @@ func (db *DBConnection) InsertUser(ctx context.Context, user User) (error) {
 	return nil
 }
 
-func (db *DBConnection) FindUserbyName(ctx context.Context, username User) (error) {
-	
+func (db *DBConnection) FindUserbyName(ctx context.Context, username string) (User, error) {
+	var user User
+	err := db.userCollection.FindOne(ctx, bson.M{"username": username}).Decode(&user)
+
+	if err != nil {
+		return User{}, fmt.Errorf("incorrect credentials : %v", err)	
+	}
+	return user, nil
 }
