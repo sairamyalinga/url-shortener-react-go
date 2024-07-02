@@ -5,18 +5,19 @@ import Header from "./Header";
 import { handleCopyToClipboard } from "../lib/utils";
 
 function Urlitem({ url, handleDelete }) {
+  const shorturl = `http://localhost:5050/${url.ShortID}`;
   
   return (
     <div className="card border border-0 mb-3 mx-5">
       <div className="card-body rounded border border-info bg-info-subtle text-info-emphasis">
         <div className="d-flex justify-content-between align-items-center  ">
           <p className="mb-0">
-            Short URL: <a href={`${url.ShortURL}`}>{`${url.ShortURL}`}</a>
+            Short URL: <a href = {shorturl} target="_blank">{shorturl}</a>
           </p>
           <div>
             <button
               className="btn btn-secondary btn-sm mr-2 mx-4"
-              onClick={() => handleCopyToClipboard(url.ShortURL)}
+              onClick={() => handleCopyToClipboard(shorturl)}
             >
               Copy
             </button>
@@ -29,7 +30,7 @@ function Urlitem({ url, handleDelete }) {
           </div>
         </div>
         <p className="mb-0">
-          Original URL: <a href={`${url.Url}`}>{url.Url}</a>
+          Original URL: <a href={`${url.Url}`}>{url.URL}</a>
         </p>
       </div>
     </div>
@@ -49,8 +50,7 @@ function Urlboard({ handleLogout }) {
         },
       })
       .then((response) => {
-        console.log(response.data)
-        setData(response.data);
+        setData(response.data.data);
       })
       .catch((Error) => {
         console.log("Err", Error);

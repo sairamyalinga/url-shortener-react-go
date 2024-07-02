@@ -23,8 +23,8 @@ function Dashboard({ handleLogout}){
 
       }})
         .then(response =>{
-          console.log(response.data)
-          setShortURL(response.data.shortURL)
+          console.log(response.data.data.shortURL)
+          setShortURL(response.data.data.shortURL)
           setShowURL(true)
         })
         .catch((error) =>{
