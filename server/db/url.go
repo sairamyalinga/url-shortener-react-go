@@ -60,10 +60,11 @@ func (db *DBConnection) GetURLByID(ctx context.Context, id string) (*ShortURL, e
 }
 
 func (db *DBConnection) GetAllURLsByUsername(ctx context.Context, username string) ([]ShortURL, error) {
-	filter := bson.D{{Key: "username", Value: username}}
+	filter := bson.D{{Key: "user_name", Value: username}}
 
 	cursor, err := db.urlCollection.Find(ctx, filter)
 	if err != nil {
+		// fmt.Println("Error in")
 		return nil, fmt.Errorf(cursor.Err().Error())
 	}
 	defer cursor.Close(ctx)
@@ -74,9 +75,11 @@ func (db *DBConnection) GetAllURLsByUsername(ctx context.Context, username strin
 		if err := cursor.Decode(&urlDoc); err != nil {
 			return nil, fmt.Errorf(err.Error())
 		}
+		// fmt.Println("HI",urlDoc)
 
 		urls = append(urls, urlDoc)
 	}
+	// fmt.Println(urls)
 	return urls, nil
 }
 
