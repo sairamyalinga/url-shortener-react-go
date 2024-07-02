@@ -9,13 +9,15 @@ import (
 
 func Router() *mux.Router {
 	db := connection.DBConnection{}
+	db.InitializeDatabase()
+	
 	ul := URLProcessor{db: &db}
 	um := UserMethods{db : &db}
 	router := mux.NewRouter()
 
 	router.HandleFunc("/{id}", ul.RedirectUrl).Methods("GET")
 
-	apiRouter := router.PathPrefix("/api/v1").Subrouter()
+	apiRouter := router.PathPrefix("/api").Subrouter()
 	apiRouter.HandleFunc("/signup", um.RegisterUser).Methods("POST")
 	apiRouter.HandleFunc("/login", um.Signin).Methods("POST")
 

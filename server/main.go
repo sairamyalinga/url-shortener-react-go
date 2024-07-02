@@ -7,7 +7,14 @@ import (
 	router "urlShortener/server/router"
 
 	"github.com/gorilla/handlers"
+	"github.com/joho/godotenv"
 )
+
+func init() {
+	if err := godotenv.Load(); err != nil {
+		log.Fatalf("No env file found in the directory")
+	}
+}
 
 func main() {
 	r := router.Router()

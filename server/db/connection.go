@@ -3,11 +3,10 @@ package connection
 import (
 	"context"
 	"fmt"
-	"log"
 	"os"
 	"time"
 
-	"github.com/joho/godotenv"
+	
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -20,11 +19,7 @@ type DBConnection struct {
 }
 
 
-func (c *DBConnection) init() {
-	if err := godotenv.Load(); err != nil {
-		log.Fatalf("No env file found in the directory")
-	}
-
+func (c *DBConnection) InitializeDatabase() {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	serverAPI := options.ServerAPI(options.ServerAPIVersion1)
@@ -37,4 +32,6 @@ func (c *DBConnection) init() {
 
 	c.database = c.mongoClient.Database("go")
 	c.urlCollection = c.database.Collection("urlStrings")
+	c.userCollection = c.database.Collection("user")
+
 }
