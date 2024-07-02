@@ -80,6 +80,6 @@ func (um *UserMethods) Signin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.WriteHeader(http.StatusOK)
+	
 	utils.SendJSONResponse(w, map[string]string{"token": token}, http.StatusOK, "JWT generated")
 }
