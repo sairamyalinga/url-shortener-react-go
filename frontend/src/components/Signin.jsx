@@ -13,7 +13,8 @@ function Signin() {
         const pwd = document.getElementById("loginpwd").value;
         axios.post('http://localhost:5050/api/login',{user_name:username, password:pwd})
         .then(response =>{
-          const jwtToken = response.data.JWTtoken;  
+          const jwtToken = response.data.data.token;  
+          console.log(response.data.data.token)
           localStorage.setItem('token', jwtToken);
           navigate("/dashboard");  
         })
@@ -29,7 +30,7 @@ function Signin() {
         const pwd = document.getElementById("signuppwd").value; 
         axios.post('http://localhost:5050/api/signup',{user_name:username, password:pwd})
         .then(response =>{    
-          alert(response.data?.Alert || 'Sign Up Success!');
+          alert(response.data?.message || 'Sign Up Success!');
           setTimeout(() => {
             setChangeForm(false);
           }, 1000);

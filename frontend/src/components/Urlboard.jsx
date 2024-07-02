@@ -43,12 +43,13 @@ function Urlboard({ handleLogout }) {
     let token = "";
     token = localStorage.getItem("token");
     axios
-      .get("http://localhost:5050/api/geturls", {
+      .get("http://localhost:5050/api/urls", {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       })
       .then((response) => {
+        console.log(response.data)
         setData(response.data);
       })
       .catch((Error) => {
@@ -66,7 +67,7 @@ function Urlboard({ handleLogout }) {
     }
     console.log(token);
     axios
-      .delete("http://localhost:5050/api/deleteurl", {
+      .delete("http://localhost:5050/api/url", {
         headers: {
           Authorization: `Bearer ${token}`,
         },

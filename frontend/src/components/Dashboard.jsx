@@ -17,7 +17,7 @@ function Dashboard({ handleLogout}){
           token = localStorage.getItem('token');
           
       }
-      axios.post('http://localhost:5050/api/shorturl',{url:requestData},{
+      axios.post('http://localhost:5050/api/url',{url:requestData},{
         headers:{
           Authorization: `Bearer ${token}`
 
