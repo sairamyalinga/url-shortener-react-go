@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import axios from 'axios';
 import { useNavigate } from "react-router-dom";
+
+import axios from 'axios';
 
 function Signin() {
 
@@ -11,7 +12,8 @@ function Signin() {
         event.preventDefault();
         const username = document.getElementById("loginuser").value;
         const pwd = document.getElementById("loginpwd").value;
-        axios.post('http://localhost:5050/api/login',{user_name:username, password:pwd})
+        axios
+        .post('http://localhost:5050/api/login',{user_name:username, password:pwd})
         .then(response =>{
           const jwtToken = response.data.data.token;  
           console.log(response.data.data.token)

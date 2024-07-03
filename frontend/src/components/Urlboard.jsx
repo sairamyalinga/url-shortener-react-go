@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
 import PropTypes from "prop-types";
 import Header from "./Header";
-import { handleCopyToClipboard } from "../lib/utils";
+import API, { handleCopyToClipboard } from "../lib/utils";
 
 function Urlitem({ url, handleDelete }) {
   const shorturl = `http://localhost:5050/${url.ShortID}`;
@@ -41,14 +40,9 @@ function Urlboard({ handleLogout }) {
   
   const [data, setData] = useState([]);
   const getURLs = () => {
-    let token = "";
-    token = localStorage.getItem("token");
-    axios
-      .get("http://localhost:5050/api/urls", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
+    
+    API
+      .get("http://localhost:5050/api/urls")
       .then((response) => {
         setData(response.data.data);
       })
@@ -66,11 +60,8 @@ function Urlboard({ handleLogout }) {
       token = localStorage.getItem("token");
     }
     console.log(token);
-    axios
+    API
       .delete("http://localhost:5050/api/url", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
         data:{
           shortID,
         }
