@@ -25,6 +25,7 @@ func main() {
 			handlers.AllowedOrigins([]string{frontend}), 
 			handlers.AllowedMethods([]string{"GET", "POST", "PUT", "DELETE", "OPTIONS"}),
 			handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"}),
+			handlers.AllowCredentials(),
 		)(r))
 	if err != nil {
 		log.Fatalln("Error with the server,", err)
