@@ -66,6 +66,10 @@ func (ul *URLProcessor) CreateURL(w http.ResponseWriter, r *http.Request) {
 	rootDomain := os.Getenv("ROOT")
 
 	if ul.isValidURL(r.Context(), urlData["url"]) {
+		found, _ := ul.db.FindURLByUsername(r.Context(), username, urlData["url"])
+		if found {
+			utils.SendJSONResponse(w, nil, http.StatusConflict, "Already Exists")
+		}
 		id, err := ul.db.InsertURL(r.Context(), connection.ShortURL{Username: username, URL: urlData["url"]})
 		if err != nil {
 			utils.SendJSONResponse(w, nil, http.StatusInternalServerError, "Internal error")
