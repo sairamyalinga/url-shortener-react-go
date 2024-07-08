@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { useNavigate } from "react-router-dom";
 
-import axios from 'axios';
+
+import API from '../lib/utils';
 
 function Signin() {
 
@@ -12,8 +13,8 @@ function Signin() {
         event.preventDefault();
         const username = document.getElementById("loginuser").value;
         const pwd = document.getElementById("loginpwd").value;
-        axios
-        .post('http://localhost:5050/api/login',{user_name:username, password:pwd})
+        API
+        .post('/login',{user_name:username, password:pwd})
         .then(response =>{
           const jwtToken = response.data.data.token;  
           console.log(response.data.data.token)
@@ -30,7 +31,7 @@ function Signin() {
         event.preventDefault();
         const username = document.getElementById("signupuser").value;
         const pwd = document.getElementById("signuppwd").value; 
-        axios.post('http://localhost:5050/api/signup',{user_name:username, password:pwd})
+        API.post('/signup',{user_name:username, password:pwd})
         .then(response =>{    
           alert(response.data?.message || 'Sign Up Success!');
           setTimeout(() => {

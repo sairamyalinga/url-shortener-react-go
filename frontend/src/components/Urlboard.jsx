@@ -4,7 +4,7 @@ import Header from "./Header";
 import API, { handleCopyToClipboard } from "../lib/utils";
 
 function Urlitem({ url, handleDelete }) {
-  const shorturl = `http://localhost:5050/${url.ShortID}`;
+  const shorturl = `${import.meta.env.VITE_API_URL}/${url.ShortID}`;
   
   return (
     <div className="card border border-0 mb-3 mx-5">
@@ -42,7 +42,7 @@ function Urlboard({ handleLogout }) {
   const getURLs = () => {
     
     API
-      .get("http://localhost:5050/api/urls")
+      .get("/urls")
       .then((response) => {
         setData(response.data.data);
       })
@@ -55,13 +55,9 @@ function Urlboard({ handleLogout }) {
   }, []);
 
   const handleDelete = (shortID) => {
-    let token = "";
-    if (localStorage.getItem("token") != null) {
-      token = localStorage.getItem("token");
-    }
-    console.log(token);
+    
     API
-      .delete("http://localhost:5050/api/url", {
+      .delete("/url", {
         data:{
           shortID,
         }

@@ -52,7 +52,7 @@ function Dashboard({ handleLogout}){
               
              (err && (
              <div className="p-3  text-danger fw-bold">
-                Provide Valid URL
+                {err}
               </div>
               ))}
           </div>
