@@ -75,11 +75,11 @@ func (db *DBConnection) GetAllURLsByUsername(ctx context.Context, username strin
 		if err := cursor.Decode(&urlDoc); err != nil {
 			return nil, fmt.Errorf(err.Error())
 		}
-		// fmt.Println("HI",urlDoc)
+		
 
 		urls = append(urls, urlDoc)
 	}
-	// fmt.Println(urls)
+	
 	return urls, nil
 }
 
@@ -90,4 +90,19 @@ func (db *DBConnection) DeleteURLByID(ctx context.Context, ID string) error {
 		return fmt.Errorf(err.Error())
 	}
 	return nil
+}
+
+func (db *DBConnection) FindURLByUsername(ctx context.Context, username string, url string)(bool, error){
+
+	filter := bson.D{{Key: "user_name", Value: username},{Key:"url", Value:url}}
+	var result ShortURL
+	res := db.urlCollection.FindOne(ctx, filter).Decode(&result)
+	if res != nil {
+		if res == mongo.ErrNoDocuments {
+			return false, nil
+		}
+		return false, fmt.Errorf(res.Error())
+	}
+	return true, nil
+
 }
