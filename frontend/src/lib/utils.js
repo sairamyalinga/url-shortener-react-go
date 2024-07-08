@@ -10,15 +10,16 @@ export const handleCopyToClipboard = (data) => {
     });
 };
 
-const token = localStorage.getItem('token')
-console.log(token)
 let API = axios.create({
-  baseURL: "http://localhost:5050/api",
+  baseURL: `${import.meta.env.VITE_API_URL}/api`,
   withCredentials: true,
-  headers: {
-      Authorization: `Bearer ${token}`
+});
 
-  }
+API.interceptors.request.use((config) => {
+  config.headers.Authorization = `Bearer ${localStorage.getItem('token')}`;
+  return config;
+}, (error) => {
+  return Promise.reject(error);
 });
 
 API.interceptors.response.use(
@@ -31,7 +32,7 @@ API.interceptors.response.use(
       window.location.href = '/';
     }
     if (error.response && error.response.data) {
-      return Promise.reject(error.response.data);
+      return Promise.reject(error.response.data.message);
     }
     return Promise.reject(error.message);
   }
