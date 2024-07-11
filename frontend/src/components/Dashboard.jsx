@@ -15,7 +15,6 @@ function Dashboard({ handleLogout}){
       
       API.post('/url',{url:requestData})
         .then(response =>{
-          console.log(response.data.data.shortURL)
           setShortURL(response.data.data.shortURL)
           setShowURL(true)
         })

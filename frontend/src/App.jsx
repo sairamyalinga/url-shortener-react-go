@@ -5,6 +5,7 @@ import { Routes, Route } from "react-router-dom"
 import Signin from './components/Signin';
 import { useNavigate, useLocation } from "react-router-dom";
 import Urlboard from "./components/Urlboard"
+import { URLProvider } from './context/URLsContext';
 
 function App() {
 
@@ -27,8 +28,10 @@ function App() {
     <div>
       <Routes>
       <Route path = "/" element = {<Signin /> }></Route>
+      <URLProvider>
       <Route path = "/dashboard" element = {<Dashboard handleLogout={handleLogout}  />}></Route>
       <Route path ="/urlboard" element={<Urlboard handleLogout={handleLogout}/>}></Route>
+      </URLProvider>
       </Routes>  
     </div>
   );
