@@ -69,6 +69,7 @@ func (ul *URLProcessor) CreateURL(w http.ResponseWriter, r *http.Request) {
 		found, _ := ul.db.FindURLByUsername(r.Context(), username, urlData["url"])
 		if found {
 			utils.SendJSONResponse(w, nil, http.StatusConflict, "Already Exists")
+			return
 		}
 		id, err := ul.db.InsertURL(r.Context(), connection.ShortURL{Username: username, URL: urlData["url"]})
 		if err != nil {
