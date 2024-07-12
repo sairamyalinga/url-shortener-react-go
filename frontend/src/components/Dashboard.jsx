@@ -9,6 +9,7 @@ function Dashboard(){
     const [shortURL, setShortURL] = useState('');
     const [showURL, setShowURL] = useState(false);
     const [err, setErr] = useState('');
+    const dispatch = useContext(UrlDispatchContext);
 
     const handleClick = () =>{
       const requestData = document.getElementById('urlinput').value;
@@ -17,6 +18,7 @@ function Dashboard(){
         .then(response =>{
           setShortURL(response.data.data.shortURL)
           setShowURL(true)
+          dispatch({type: 'ADD_URL', payload:response.data.data})
         })
         .catch((error) =>{
           setShortURL('')
