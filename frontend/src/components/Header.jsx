@@ -2,11 +2,14 @@ import PropTypes from 'prop-types';
 import logo from '/logo.jpeg'
 import {IoIosLink} from "react-icons/io";
 import { useNavigate } from 'react-router-dom';
+import { useContext } from 'react';
+import { UrlDispatchContext } from '../context/URLsContext';
 
 
-function Header({ handleLogout, page }){
+function Header({ page }){
 
   const navigate = useNavigate()
+  const dispatch = useContext(UrlDispatchContext)
   const handleBoards = () => {
     if (page !== "urlboard"){
     navigate("/urlboard")
@@ -16,6 +19,12 @@ function Header({ handleLogout, page }){
     }
 
 
+  }
+
+  const handleLogout = () => {
+    dispatch({ type: 'LOG_OUT' });
+    localStorage.removeItem('token');
+    navigate("/")    
   }
    
   return (
@@ -33,7 +42,6 @@ function Header({ handleLogout, page }){
 }
 
 Header.propTypes = {
-  handleLogout: PropTypes.func.isRequired,
   page: PropTypes.string
 };
 

@@ -1,12 +1,12 @@
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import { useNavigate } from "react-router-dom";
-
-
 import API from '../lib/utils';
+import { UrlDispatchContext } from '../context/URLsContext';
 
 function Signin() {
 
     const [changeForm, setChangeForm] = useState(false);
+    const dispatch = useContext(UrlDispatchContext)
     const navigate = useNavigate();
    
     const handlelogin = (event) => {
@@ -17,8 +17,9 @@ function Signin() {
         .post('/login',{user_name:username, password:pwd})
         .then(response =>{
           const jwtToken = response.data.data.token;  
-          console.log(response.data.data.token)
+        //   console.log(response.data.data.token)
           localStorage.setItem('token', jwtToken);
+          dispatch({type: 'SIGN_IN', payload:true})
           navigate("/dashboard");  
         })
         .catch(error =>{

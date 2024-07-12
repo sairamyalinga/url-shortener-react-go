@@ -1,10 +1,10 @@
-import PropTypes from 'prop-types';
-import { useState } from 'react'
+import { useContext, useState } from 'react'
 import Header from './Header.jsx'
 import API from '../lib/utils.js'
 import { handleCopyToClipboard } from '../lib/utils.js';
+import { UrlDispatchContext } from '../context/URLsContext.jsx';
 
-function Dashboard({ handleLogout}){
+function Dashboard(){
 
     const [shortURL, setShortURL] = useState('');
     const [showURL, setShowURL] = useState(false);
@@ -32,7 +32,7 @@ function Dashboard({ handleLogout}){
 
     return (
         <div>
-        <Header handleLogout={handleLogout}/>
+        <Header/>
         <div className="container" style={{ marginTop: '200px' }}>
         <div className="row">
           <div className="col-md-8">
@@ -62,8 +62,5 @@ function Dashboard({ handleLogout}){
     );  
 }
 
-Dashboard.propTypes = { 
-  handleLogout: PropTypes.func.isRequired
-}
 
 export default Dashboard;
