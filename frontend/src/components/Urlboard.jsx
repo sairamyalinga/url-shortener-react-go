@@ -1,7 +1,8 @@
-import { useEffect, useState } from "react";
+import { useContext } from "react"
 import PropTypes from "prop-types";
 import Header from "./Header";
 import API, { handleCopyToClipboard } from "../lib/utils";
+import {UrlContext, UrlDispatchContext} from "../context/URLsContext"
 
 function Urlitem({ url, handleDelete }) {
   const shorturl = `${import.meta.env.VITE_API_URL}/${url.ShortID}`;
@@ -36,23 +37,10 @@ function Urlitem({ url, handleDelete }) {
   );
 }
 
-function Urlboard({ handleLogout }) {
+function Urlboard() {
+  const { urls } = useContext(UrlContext);
+  const dispatch = useContext(UrlDispatchContext);
   
-  const [data, setData] = useState([]);
-  const getURLs = () => {
-    
-    API
-      .get("/urls")
-      .then((response) => {
-        setData(response.data.data);
-      })
-      .catch((Error) => {
-        console.log("Err", Error);
-      });
-  }
-  useEffect(() => {
-    getURLs();
-  }, []);
 
   const handleDelete = (shortID) => {
     
@@ -63,7 +51,7 @@ function Urlboard({ handleLogout }) {
         }
       })
       .then(() => {
-        getURLs()
+        dispatch({ type: 'REMOVE_URL', payload: shortID });
       })
       .catch((error) => {
         alert(error);
@@ -72,9 +60,9 @@ function Urlboard({ handleLogout }) {
   
   return (
     <div>
-      <Header handleLogout={handleLogout} page="urlboard" />
-      {data ? (
-        data.map((url, index) => <Urlitem key={index} url={url} handleDelete={() => handleDelete(url.ShortID)} />)
+      <Header page="urlboard" />
+      {urls.length > 0 ? (
+        urls.map((url, index) => <Urlitem key={index} url={url} handleDelete={() => handleDelete(url.ShortID)} />)
       ) : (
         <div className="d-flex align-items-center justify-content-center">
           <div className="badge text-bg-info text-wrap fs-5 fst-italic">
@@ -87,9 +75,6 @@ function Urlboard({ handleLogout }) {
   );
 }
 
-Urlboard.propTypes = {
-  handleLogout: PropTypes.func.isRequired,
-};
 
 Urlitem.propTypes = {
   url: PropTypes.object.isRequired,
