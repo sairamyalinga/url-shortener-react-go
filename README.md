@@ -6,7 +6,7 @@ URL Shortener is a simple web service that allows users to shorten long URLs int
 
 - Shorten long URLs into shorter ones.
 - Redirect users from shortened URLs to the original long URLs.
-- Shows list of URLS for the user.
+- Shows list of URLs for the user.
 - Delete URL from history.
 
 ## Technologies Used
