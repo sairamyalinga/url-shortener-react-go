@@ -40,10 +40,7 @@ URL Shortener is a simple web service that allows users to shorten long URLs int
    ```bash
    MONGODB_URI=<your-mongodb-uri>
    PORT=<port-number>
-4. Install backend dependencies
-   ```bash
-   go mod tidy
-5. Install frontend dependencies
+4. Install frontend dependencies
    ```bash
    cd frontend
    npm install
