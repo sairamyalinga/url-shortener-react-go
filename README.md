@@ -50,8 +50,24 @@ URL Shortener is a simple web service that allows users to shorten long URLs int
    ```bash
    go run main.go
 2. Start the frontend development server:
-```bash
-cd frontend
-npm run dev
+   ```bash
+   cd frontend
+   npm run dev
 
+### Screenshots
+
+### 1. Login Page
+This is the login page where users can authenticate into the application.
+
+![Login Page](images/login.png)
+
+### 2. Dashboard
+After logging in, users are redirected to the dashboard, where they can shorten the URL.
+
+![Dashboard](images/dashboard.png)
+
+### 3. Get URLs Page
+The Get URLs page allows users to view and manage their shortened URLs.
+
+![Get URLs Page](images/Get-urls.png)
 
